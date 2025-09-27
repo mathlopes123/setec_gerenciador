@@ -600,7 +600,7 @@
 
       filteredTasks = allTasks.filter(task => {
         const matchesName = !nameFilter || 
-          (task.Descriçao && task.Descriçao.toLowerCase().includes(nameFilter));
+          (task.Descrição && task.Descrição.toLowerCase().includes(nameFilter));
         const matchesStatus = !statusFilter || task.Situacao === statusFilter;
         const matchesDate = !dateFilter || task.Data === dateFilter;
         const matchesCategory = !categoryFilter || task.Categoria === categoryFilter;
