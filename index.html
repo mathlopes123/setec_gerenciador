@@ -1,50 +1,53 @@
-<html>
-  <head>
-    <base target="_top">
-
-      <style>
-
-    #tb{
-     position: absolute;
-     top: 50px;
-     left: 300px;
-     font-size: 18px;
-     font-face:"arial";
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Dados da Planilha</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
     }
-
-    #titulo{
-     position: absolute;
-     top: 0px;
-     left: 390px;
-}
-
+    td, th {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
   </style>
+</head>
+<body>
+  <h1>Dados da Planilha</h1>
+  <table id="tabela">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
 
-  </head>
+  <script>
+    const url = "SUA_URL_DO_WEB_APP"; // Cole aqui a URL que você copiou do Apps Script
 
-  <body>
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        const tabela = document.getElementById("tabela");
+        const thead = tabela.querySelector("thead");
+        const tbody = tabela.querySelector("tbody");
 
-  <p id = "titulo"> <b> <font color= "blue" size= "5px">TÍTULO TABELA</font></b></p>
+        if (data.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='999'>Sem dados</td></tr>";
+          return;
+        }
 
-    <table method="GET" action="" id="tb" border="1" cellpadding="5px" >
-    <?var tabela = DadosTabela();?>
-    <?for(var i = 0; i < tabela.length; i++) { ?>
-      <?if(i == 0) { ?>
-        <tr>
-        <?for(var j = 0; j < tabela[i].length; j++) { ?>
-        <th><?= tabela[i][j] ?></th>
-        <? } ?>
-        </tr>
-      <? } else { ?>
-        <tr>
-        <?for(var j = 0; j < tabela[i].length; j++) { ?>
-        <td><?= tabela[i][j] ?></td>
-        <? } ?>
-        </tr>
-      <? } ?>
-    <? } ?>
-    </table>
+        // Cabeçalhos
+        const headers = Object.keys(data[0]);
+        thead.innerHTML = "<tr>" + headers.map(h => `<th>${h}</th>`).join('') + "</tr>";
 
-
-  </body>
+        // Linhas
+        tbody.innerHTML = data.map(row => {
+          return "<tr>" + headers.map(h => `<td>${row[h]}</td>`).join('') + "</tr>";
+        }).join('');
+      })
+      .catch(err => {
+        console.error("Erro ao buscar dados:", err);
+      });
+  </script>
+</body>
 </html>
