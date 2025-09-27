@@ -1,1 +1,50 @@
+<html>
+  <head>
+    <base target="_top">
 
+      <style>
+
+    #tb{
+     position: absolute;
+     top: 50px;
+     left: 300px;
+     font-size: 18px;
+     font-face:"arial";
+    }
+
+    #titulo{
+     position: absolute;
+     top: 0px;
+     left: 390px;
+}
+
+  </style>
+
+  </head>
+
+  <body>
+
+  <p id = "titulo"> <b> <font color= "blue" size= "5px">TÍTULO TABELA</font></b></p>
+
+    <table  id="tb" border="1" cellpadding="5px" >
+    <?var tabela = DadosTabela();?>
+    <?for(var i = 0; i < tabela.length; i++) { ?>
+      <?if(i == 0) { ?>
+        <tr>
+        <?for(var j = 0; j < tabela[i].length; j++) { ?>
+        <th><?= tabela[i][j] ?></th>
+        <? } ?>
+        </tr>
+      <? } else { ?>
+        <tr>
+        <?for(var j = 0; j < tabela[i].length; j++) { ?>
+        <td><?= tabela[i][j] ?></td>
+        <? } ?>
+        </tr>
+      <? } ?>
+    <? } ?>
+    </table>
+
+
+  </body>
+</html>
