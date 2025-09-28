@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <title>Gerenciador de Tarefas</title>
+  <style>
+    /* ... SEU CSS COMPLETO AQUI (NÃO MUDADO) ... */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Navigation */
+    nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      padding: 15px 0;
+    }
+
+    nav li {
+      margin: 0 20px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Filters */
+    .filters {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .filters h3 {
+      margin-bottom: 20px;
+      color: #333;
+      text-align: center;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-group label {
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 12px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5a67d8;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e0;
+    }
+
+    /* Charts */
+    /* Estilo para a seção de gráficos e estatísticas */
+    .charts-section {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    /* O grid de gráficos: usa flexbox para colocá-los lado a lado */
+    .charts-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 20px;
+    }
+
+    /* CONTÊINER CRÍTICO: Define a altura e largura máxima para o gráfico */
+    .chart-container {
+      text-align: center;
+      margin-bottom: 5px;
+        max-width: 450px; 
+        min-width: 300px; /* Para telas menores */
+        width: 100%;
+        /* Define uma altura explícita para o Chart.js */
+        height: 350px; 
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Garante que o canvas ocupe o contêiner */
+    .chart {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    /* Estilos para o painel de cards de estatísticas */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+        padding: 0 10px;
+    }
+    .stat-card {
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
+    .stat-number {
+        font-size: 2em;
+        font-weight: bold;
+    }
+    .stat-label {
+        color: #777;
+        font-size: 0.9em;
+    }
+
+
+    /* Table */
+    .table-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      margin-top: 25px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+      background: #f7fafc;
+      font-weight: 600;
+      color: #4a5568;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:hover {
+      background: #f7fafc;
+    }
+
+    /* Status */
+    .status-select {
+      padding: 8px 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      background: white;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .status-nao-iniciada {
+      border-color: #e53e3e;
+      color: #e53e3e;
+    }
+
+    .status-iniciada {
+      border-color: #dd6b20;
+      color: #dd6b20;
+    }
+
+    .status-concluida {
+      border-color: #38a169;
+      color: #38a169;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Alert */
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .alert.show {
+      transform: translateX(0);
+    }
+
+    .alert-success {
+      background: #38a169;
+    }
+
+    .alert-error {
+      background: #e53e3e;
+    }
+
+    .alert-info {
+      background: #3182ce;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      nav ul {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      table {
+        font-size: 14px;
+      }
+
+      th, td {
+        padding: 10px 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <ul>
+        <li class="btn btn-primary"><a href="index.html">📋 Tarefas</a></li>
+        <li class="btn btn-secondary"><a href="cadastro.html">➕ Cadastro</a></li>
+      </ul>
+    </nav>
+
+    <div class="header">
+      <h1>📋 Gerenciador de Tarefas</h1>
+    </div>
+
+    
+    <div class="filters">
+      <h3>🔍 Filtros</h3>
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="filterText">Busca por Descrição:</label>
+          <input type="text" id="filterText" placeholder="Digite a descrição da tarefa...">
+        </div>
+        <div class="filter-group">
+          <label for="filterStatus">Situação:</label>
+          <select id="filterStatus">
+            <option value="Todos">Todas as situações</option>
+            </select>
+        </div>
+        <div class="filter-group">
+          <label for="filterPriority">Prioridade:</label>
+          <select id="filterPriority">
+            <option value="Todas">Todas as prioridades</option>
+            <option value="Alta">Alta</option>
+            <option value="Média">Média</option>
+            <option value="Baixa">Baixa</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filterCategory">Categoria:</label>
+          <select id="filterCategory">
+            <option value="Todas">Todas as categorias</option>
+            <option value="Alimentação">🍽️ Alimentação</option>
+            <option value="Vestuário">👕 Vestuário</option>
+            <option value="Limpeza">🧹 Limpeza</option>
+            <option value="Trabalho">💼 Trabalho</option>
+            <option value="Estudos">📚 Estudos</option>
+            <option value="Saúde">🏥 Saúde</option>
+            <option value="Lazer">🎮 Lazer</option>
+            <option value="Outros">📦 Outros</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-buttons">
+        <button class="btn btn-primary" onclick="filterTable()">🔍 Aplicar Filtros</button>
+        <button class="btn btn-secondary" onclick="clearFilters()">🗑️ Limpar Filtros</button>
+        <button class="btn btn-primary" onclick="fetchData()">🔄 Atualizar Dados</button>
+      </div>
+    </div>
+
+ 
+    <div class="charts-section">
+      <h3 style="text-align: center; margin-bottom: 25px;">📊 Estatísticas das Tarefas</h3>
+      <div class="charts-grid">
+        <div class="chart-container">
+          <h4>Distribuição por Status</h4>
+          <canvas id="statusChart" class="chart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h4>Tarefas por Categoria</h4>
+          <canvas id="categoryChart" class="chart"></canvas>
+        </div>
+      </div>
+      <div class="stats-grid" id="statsGrid">
+         </div>
+    </div>
+
+     
+    <div class="table-container">
+      <h3>📝 Lista de Tarefas</h3>
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p id="loading-message">Carregando tarefas...</p>
+      </div>
+      <table id="tabela" style="display: none;">
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Prioridade</th>
+                <th>Observações</th>
+                <th>Situação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tasks-tbody">
+            </tbody>
+      </table>
+    </div>
+  </div>
+
+    
+  <div id="alertContainer"></div>
+
+<script>
+    // ⚠️ ATUALIZE ESTA URL COM O NOVO ENDEREÇO GERADO PELO SEU APPS SCRIPT DEPLOY!
+    const API_URL = "https://script.google.com/macros/s/AKfycbzXOjj-YgixwSgj1JdmME7MngZtZ8sN5CeRVvVN9WJIA_G0786KKma3t-QA7_dhCeb9/exec";
+
+    let allTasks = []; // Armazena todos os dados brutos da planilha
+    let modifiedTasks = {}; // Armazena tarefas modificadas localmente
+    
+    // Nomes das colunas da planilha
+    const STATUS_COLUMN_NAME = 'Situacao';
+    const ID_COLUMN_NAME = 'RowIndex'; 
+
+    // Opções de status 
+    const STATUS_OPTIONS = ['A Fazer', 'Em Andamento', 'Concluído'];
+
+    // --- VARIÁVEIS GLOBAIS PARA GRÁFICOS (DECLARADAS APENAS UMA VEZ!) ---
+    let statusChartInstance = null;
+    let categoryChartInstance = null;
+    
+    const STATUS_COLORS = {
+        'A Fazer': 'rgb(255, 99, 132)',       // Vermelho/Rosa
+        'Em Andamento': 'rgb(255, 205, 86)',  // Amarelo
+        'Concluído': 'rgb(75, 192, 192)'      // Verde/Ciano
+    };
+    // ---------------------------------------------------------------------
+
+    // --- 1. FUNÇÕES DE BUSCA E CARREGAMENTO DE DADOS ---
+
+    /**
+     * Puxa os dados da API (Google Apps Script) e inicia a renderização.
+     */
+    async function fetchData() {
+        try {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('tabela').style.display = 'none';
+            document.getElementById('tasks-tbody').innerHTML = '';
+            
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) {
+                throw new Error(`Erro de rede: ${response.status} ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            allTasks = data; 
+            renderTable(allTasks); 
+            
+            // CHAMADA CRÍTICA PARA ATUALIZAR ESTATÍSTICAS E GRÁFICOS
+            updateStatistics(allTasks); 
+            
+        } catch (error) {
+            console.error("Erro ao buscar dados da API:", error);
+            document.getElementById('tasks-tbody').innerHTML = 
+                `<tr><td colspan="6" class="text-center text-danger">Falha ao carregar dados. Verifique o console.</td></tr>`;
+        } finally {
+             document.getElementById('loading').style.display = 'none';
+             document.getElementById('tabela').style.display = 'table';
+        }
+    }
+
+    /**
+     * Renderiza a tabela HTML com base na lista de tarefas fornecida.
+     */
+    function renderTable(tasksToRender) {
+        const tableBody = document.getElementById('tasks-tbody');
+        let html = '';
+
+        if (tasksToRender.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-info">Nenhuma tarefa encontrada.</td></tr>`;
+            return;
+        }
+
+        // Chaves do seu JSON
+        const DESCRICAO_KEY = 'Descrição';
+        const CATEGORIA_KEY = 'Categoria';
+        const PRIORIDADE_KEY = 'Prioridade';
+        const OBSERVACOES_KEY = 'Observações';
+        
+        tasksToRender.forEach(task => {
+            const rowId = task[ID_COLUMN_NAME];
+            const currentStatus = task[STATUS_COLUMN_NAME] || STATUS_OPTIONS[0]; 
+            
+            // Verifica modificações locais
+            const statusToRender = modifiedTasks[rowId] ? modifiedTasks[rowId].newStatus : currentStatus;
+            const isModified = !!modifiedTasks[rowId];
+            
+            let statusOptionsHtml = STATUS_OPTIONS.map(status => `
+                <option class="filter-group" value="${status}" ${status === statusToRender ? 'selected' : ''}>${status}</option>
+            `).join('');
+
+            const actionButton = isModified
+                ? `<button class="btn btn-primary btn-sm" style="padding: 8px 15px;" onclick="submitStatusUpdate(${rowId})">💾 Salvar</button>`
+                : '—';
+
+            html += `
+                <tr data-row-index="${rowId}" class="${isModified ? 'table-warning' : ''}">
+                    <td>${task[DESCRICAO_KEY] || ''}</td>
+                    <td>${task[CATEGORIA_KEY] || ''}</td>
+                    <td>${task[PRIORIDADE_KEY] || ''}</td>
+                    <td>${task[OBSERVACOES_KEY] || ''}</td>
+                    
+                    <td class="filter-group">
+                        <select id="status-${rowId}" 
+                                data-original-status="${currentStatus}" 
+                                onchange="handleStatusChange(${rowId}, this.value)">
+                            ${statusOptionsHtml}
+                        </select>
+                    </td>
+                    
+                    <td>${actionButton}</td>
+                </tr>
+            `;
+        });
+
+        tableBody.innerHTML = html;
+        clearFilters(false);
+    }
+
+    // --- 2. FUNÇÕES DE FILTRAGEM ---
+
+    /**
+     * Aplica os filtros definidos nos inputs.
+     */
+    function filterTable() {
+        const searchText = document.getElementById('filterText').value.toLowerCase();
+        const statusFilter = document.getElementById('filterStatus').value;
+        const priorityFilter = document.getElementById('filterPriority').value;
+        const categoryFilter = document.getElementById('filterCategory').value;
+
+        const filteredTasks = allTasks.filter(task => {
+            
+            // 1. Filtro por Texto 
+            const matchesText = !searchText || 
+                                (task['Descrição'] && task['Descrição'].toLowerCase().includes(searchText)) || 
+                                (task['Observações'] && task['Observações'].toLowerCase().includes(searchText));
+
+            // 2. Filtro por Status (Checa o status modificado localmente se houver)
+            const currentStatus = modifiedTasks[task.RowIndex] ? modifiedTasks[task.RowIndex].newStatus : task[STATUS_COLUMN_NAME];
+            const matchesStatus = statusFilter === 'Todos' || !statusFilter || currentStatus === statusFilter;
+
+            // 3. Filtro por Prioridade
+            const matchesPriority = priorityFilter === 'Todas' || !priorityFilter || task['Prioridade'] === priorityFilter;
+            
+            // 4. Filtro por Categoria
+            const matchesCategory = categoryFilter === 'Todas' || !categoryFilter || task['Categoria'] === categoryFilter;
+
+            return matchesText && matchesStatus && matchesPriority && matchesCategory;
+        });
+
+        renderTable(filteredTasks);
+        // Atualiza estatísticas com os dados FILTRADOS
+        updateStatistics(filteredTasks);
+    }
+
+    /**
+     * Limpa os filtros e recarrega a tabela completa.
+     */
+    function clearFilters(shouldRender = true) {
+        document.getElementById('filterText').value = '';
+        document.getElementById('filterStatus').value = 'Todos';
+        document.getElementById('filterPriority').value = 'Todas';
+        document.getElementById('filterCategory').value = 'Todas';
+        
+        if(shouldRender) {
+             renderTable(allTasks);
+        }
+    }
+
+    // --- 3. FUNÇÕES DE ATUALIZAÇÃO DE STATUS (POST) ---
+    
+    /**
+     * Gerencia a alteração local do status no dropdown.
+     */
+    function handleStatusChange(rowId, newStatus) {
+        const rowIndex = Number(rowId); 
+        
+        if (isNaN(rowIndex) || rowIndex < 2) return; 
+
+        const task = allTasks.find(t => t.RowIndex === rowIndex);
+        if (!task) return;
+
+        const originalStatus = task[STATUS_COLUMN_NAME];
+        
+        if (newStatus !== originalStatus) {
+            modifiedTasks[rowIndex] = {
+                rowIndex: rowIndex,
+                newStatus: newStatus
+            };
+        } else {
+            delete modifiedTasks[rowIndex];
+        }
+        
+        filterTable(); 
+    }
+
+
+    /**
+     * Envia a atualização de status para o Apps Script (doPost).
+     */
+    async function submitStatusUpdate(rowId) {
+        const taskToUpdate = modifiedTasks[rowId];
+        
+        if (!taskToUpdate) {
+            alert("Nenhuma modificação pendente para salvar.");
+            return;
+        }
+
+        const payload = {
+            action: 'updateStatus',
+            rowIndex: taskToUpdate.rowIndex, 
+            newStatus: taskToUpdate.newStatus
+        };
+
+        try {
+            document.getElementById('loading-message').textContent = 'Salvando...';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('tabela').style.display = 'none';
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8', 
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro ao salvar: ${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(`Sucesso: ${result.message}`);
+                
+                delete modifiedTasks[rowId];
+                await fetchData(); 
+            } else {
+                alert(`Erro ao salvar no Sheets: ${result.message}`);
+            }
+
+        } catch (error) {
+            console.error("Erro no POST:", error);
+            alert("Erro fatal ao tentar salvar os dados. Verifique o console.");
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+    
+    // --- 4. FUNÇÕES DE ESTATÍSTICAS E GRÁFICOS (CHART.JS) ---
+
+    /**
+     * Calcula as estatísticas e desenha os gráficos de Status e Categoria.
+     */
+    function updateStatistics(tasks) {
+        const statusCounts = {};
+        const categoryCounts = {};
+        
+        let totalTasks = 0;
+
+        tasks.forEach(task => {
+            // Usa o status modificado localmente se existir, senão o original
+            const status = modifiedTasks[task.RowIndex] ? modifiedTasks[task.RowIndex].newStatus : (task[STATUS_COLUMN_NAME] || 'A Fazer'); 
+            const category = task['Categoria'] || 'Não Definido';
+
+            totalTasks++;
+
+            statusCounts[status] = (statusCounts[status] || 0) + 1;
+            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        });
+
+        renderStatsGrid(totalTasks, statusCounts);
+        renderStatusChart(statusCounts);
+        renderCategoryChart(categoryCounts);
+    }
+
+    /**
+     * Renderiza o painel de cards de estatísticas (Stats Grid).
+     */
+    function renderStatsGrid(totalTasks, statusCounts) {
+        const statsGrid = document.getElementById('statsGrid');
+        statsGrid.innerHTML = ''; 
+
+        const completed = statusCounts['Concluído'] || 0;
+        const pending = totalTasks - completed;
+        const progress = totalTasks > 0 ? ((completed / totalTasks) * 100).toFixed(0) : 0;
+
+        const statsData = [
+            { label: 'Total de Tarefas', number: totalTasks, color: '#667eea' },
+            { label: 'Tarefas Concluídas', number: completed, color: '#38a169' },
+            { label: 'Tarefas Pendentes', number: pending, color: '#e53e3e' },
+            { label: 'Progresso (%)', number: `${progress}%`, color: '#dd6b20' }
+        ];
+
+        statsGrid.innerHTML = statsData.map(stat => `
+            <div class="stat-card" style="border-left: 4px solid ${stat.color};">
+                <div class="stat-number" style="color: ${stat.color};">${stat.number}</div>
+                <div class="stat-label">${stat.label}</div>
+            </div>
+        `).join('');
+    }
+
+    /**
+     * Desenha o gráfico de pizza (Status).
+     */
+    function renderStatusChart(statusCounts) {
+        const ctx = document.getElementById('statusChart').getContext('2d');
+
+        // Destrói a instância anterior (corrigido o bug de sobreposição)
+        if (statusChartInstance) {
+            statusChartInstance.destroy();
+        }
+
+        const labels = Object.keys(statusCounts);
+        const data = Object.values(statusCounts);
+        const backgroundColors = labels.map(label => STATUS_COLORS[label] || 'rgb(201, 203, 207)'); 
+
+        statusChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: false,
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Desenha o gráfico de barras (Categoria).
+     */
+    function renderCategoryChart(categoryCounts) {
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+
+        // Destrói a instância anterior (corrigido o bug de sobreposição)
+        if (categoryChartInstance) {
+            categoryChartInstance.destroy();
+        }
+        
+        const labels = Object.keys(categoryCounts);
+        const data = Object.values(categoryCounts);
+
+        categoryChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Tarefas por Categoria',
+                    data: data,
+                    backgroundColor: '#764ba2',
+                    borderColor: '#764ba2',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                if (value % 1 === 0) return value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // --- INICIALIZAÇÃO ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterStatusSelect = document.getElementById('filterStatus');
+        if (filterStatusSelect) {
+            filterStatusSelect.innerHTML = '<option value="Todos">Todas as situações</option>' + 
+                STATUS_OPTIONS.map(status => `<option value="${status}">${status}</option>`).join('');
+        }
+        
+        fetchData();
+    });
+</script>
+</body>
+</html>

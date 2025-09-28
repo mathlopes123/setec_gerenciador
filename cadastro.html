@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Tarefas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        nav li {
+            margin: 0 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        /* Form */
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Button */
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-submit .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        .btn-submit.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-submit.loading .btn-text {
+            opacity: 0.7;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-width: 350px;
+        }
+
+        .alert.show {
+            transform: translateX(0);
+        }
+
+        .alert-success {
+            background: #38a169;
+        }
+
+        .alert-error {
+            background: #e53e3e;
+        }
+
+        .alert-info {
+            background: #3182ce;
+        }
+
+        /* Tips */
+        .tips-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tips-container h3 {
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tips-list {
+            list-style: none;
+        }
+
+        .tips-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            color: #666;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tips-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .alert {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+                transform: translateY(-100px);
+            }
+
+            .alert.show {
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .btn-submit {
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+
+        /* Required field indicator */
+        .required {
+            color: #e53e3e;
+        }
+
+        /* Form validation */
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea {
+            border-color: #e53e3e;
+            box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="index.html">📋 Tarefas</a></li>
+                <li><a href="cadastro.html">➕ Cadastro</a></li>
+            </ul>
+        </nav>
+
+        <div class="header">
+            <h1>➕ Cadastro de Tarefas</h1>
+            <p>Adicione uma nova tarefa ao seu sistema de gerenciamento</p>
+        </div>
+
+        <div class="form-container">
+            <h2>📝 Nova Tarefa</h2>
+            <form id="taskForm" method="POST" action="https://script.google.com/macros/s/AKfycbyTe5miD_c2XAn5UDHAIfWf_vnirlske7BeW0xMu2SVSgHQlZFYUqgmnUvbLYy_K4qU/exec">
+                
+                <div class="form-group">
+                    <label for="descricao">Descrição da Tarefa <span class="required">*</span></label>
+                    <textarea 
+                        name="Descrição" 
+                        id="descricao" 
+                        placeholder="Descreva detalhadamente a tarefa que precisa ser realizada..."
+                        required
+                    ></textarea>
+                    <div class="error-message">Por favor, descreva a tarefa.</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="categoria">Categoria <span class="required">*</span></label>
+                        <select name="Categoria" id="categoria" required>
+                            <option value="" disabled selected>Selecione uma categoria</option>
+                            <option value="Alimentação">🍽️ Alimentação</option>
+                            <option value="Vestuário">👕 Vestuário</option>
+                            <option value="Limpeza">🧹 Limpeza</option>
+                            <option value="Trabalho">💼 Trabalho</option>
+                            <option value="Estudos">📚 Estudos</option>
+                            <option value="Saúde">🏥 Saúde</option>
+                            <option value="Lazer">🎮 Lazer</option>
+                            <option value="Outros">📦 Outros</option>
+                        </select>
+                        <div class="error-message">Por favor, selecione uma categoria.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="situacao">Situação Inicial</label>
+                        <select name="Situação" id="situacao">
+                            <option value="Não Iniciada" selected>🔴 Não Iniciada</option>
+                            <option value="Iniciada">🟡 Iniciada</option>
+                            <option value="Concluída">🟢 Concluída</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data">Data da Tarefa</label>
+                        <input type="date" name="Data de Cadastro" id="data">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prioridade">Prioridade</label>
+                        <select name="Prioridade" id="prioridade">
+                            <option value="Baixa">🟢 Baixa</option>
+                            <option value="Média" selected>🟡 Média</option>
+                            <option value="Alta">🔴 Alta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="observacoes">Observações Adicionais</label>
+                    <textarea 
+                        name="Observações" 
+                        id="observacoes" 
+                        placeholder="Adicione observações, lembretes ou detalhes importantes..."
+                        rows="4"
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="spinner"></span>
+                    <span class="btn-text">✅ Cadastrar Tarefa</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="tips-container">
+            <h3>💡 Dicas para um bom cadastro</h3>
+            <ul class="tips-list">
+                <li>
+                    <span>📝</span>
+                    <span>Seja específico na descrição da tarefa para facilitar a execução</span>
+                </li>
+                <li>
+                    <span>📅</span>
+                    <span>Defina uma data realista para conclusão da tarefa</span>
+                </li>
+                <li>
+                    <span>🎯</span>
+                    <span>Escolha a categoria correta para melhor organização</span>
+                </li>
+                <li>
+                    <span>⚡</span>
+                    <span>Use a prioridade para organizar suas tarefas por importância</span>
+                </li>
+                <li>
+                    <span>📋</span>
+                    <span>Adicione observações importantes que podem ajudar na execução</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+     Alert container 
+    <div id="alertContainer"></div>
+
+    <script>
+        // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('data').value = today;
+        });
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    if (alertContainer.contains(alert)) {
+                        alertContainer.removeChild(alert);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        function validateForm() {
+            let isValid = true;
+            const requiredFields = ['descricao', 'categoria'];
+            
+            // Clear previous errors
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const formGroup = field.closest('.form-group');
+                
+                if (!field.value.trim()) {
+                    formGroup.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+        // Form submission
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                showAlert('Por favor, preencha todos os campos obrigatórios.', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const form = this;
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.querySelector('.btn-text').textContent = 'Cadastrando...';
+            
+            showAlert('Enviando tarefa...', 'info');
+
+            // Create FormData
+            const formData = new FormData(form);
+            
+            // Submit to Google Apps Script
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta do servidor');
+                }
+                return response.text();
+            })
+            .then(data => {
+                showAlert('✅ Tarefa cadastrada com sucesso!', 'success');
+                
+                // Reset form
+                form.reset();
+                
+                // Set today's date again
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('data').value = today;
+                document.getElementById('situacao').value = 'Não Iniciada';
+                document.getElementById('prioridade').value = 'Média';
+                
+                // Optional: redirect to tasks page after a delay
+                setTimeout(() => {
+                    if (confirm('Tarefa cadastrada! Deseja ir para a página de tarefas?')) {
+                        window.location.href = 'index.html';
+                    }
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showAlert('❌ Erro ao cadastrar tarefa. Tente novamente.', 'error');
+            })
+            .finally(() => {
+                // Re-enable button after 3 seconds to prevent spam
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('loading');
+                    submitBtn.querySelector('.btn-text').textContent = '✅ Cadastrar Tarefa';
+                }, 3000);
+            });
+        });
+
+        // Real-time validation
+        document.getElementById('descricao').addEventListener('input', function() {
+            const formGroup = this.closest('.form-group');
+            if (this.value.trim()) {
+                formGroup.classList.remove('error');
+            }
+        });
+
+        document.getElementById('categoria').addEventListener('change', function() {
+            const formGroup = this.closest('.form-group');
+            if (this.value) {
+                formGroup.classList.remove('error');
+            }
+        });
+
+        // Prevent multiple submissions with Enter key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                const submitBtn = document.getElementById('submitBtn');
+                if (submitBtn.disabled) {
+                    e.preventDefault();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
