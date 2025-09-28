@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Tarefas</title>
+    <link rel="stylesheet" href="styles/globals.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="index.html">📋 Tarefas</a></li>
+                <li><a href="cadastro.html">➕ Cadastro</a></li>
+            </ul>
+        </nav>
+
+        <div class="header">
+            <h1>➕ Cadastro de Tarefas</h1>
+            <p>Adicione uma nova tarefa ao seu sistema de gerenciamento</p>
+        </div>
+
+        <div class="form-container">
+            <h2>📝 Nova Tarefa</h2>
+            <form id="taskForm" method="POST" action="https://script.google.com/macros/s/AKfycbyTe5miD_c2XAn5UDHAIfWf_vnirlske7BeW0xMu2SVSgHQlZFYUqgmnUvbLYy_K4qU/exec">
+                
+                <div class="form-group">
+                    <label for="descricao">Descrição da Tarefa <span class="required">*</span></label>
+                    <textarea 
+                        name="Descrição" 
+                        id="descricao" 
+                        placeholder="Descreva detalhadamente a tarefa que precisa ser realizada..."
+                        required
+                    ></textarea>
+                    <div class="error-message">Por favor, descreva a tarefa.</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="categoria">Categoria <span class="required">*</span></label>
+                        <select name="Categoria" id="categoria" required>
+                            <option value="" disabled selected>Selecione uma categoria</option>
+                            <option value="Alimentação">🍽️ Alimentação</option>
+                            <option value="Vestuário">👕 Vestuário</option>
+                            <option value="Limpeza">🧹 Limpeza</option>
+                            <option value="Trabalho">💼 Trabalho</option>
+                            <option value="Estudos">📚 Estudos</option>
+                            <option value="Saúde">🏥 Saúde</option>
+                            <option value="Lazer">🎮 Lazer</option>
+                            <option value="Outros">📦 Outros</option>
+                        </select>
+                        <div class="error-message">Por favor, selecione uma categoria.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="situacao">Situação Inicial</label>
+                        <select name="Situação" id="situacao">
+                            <option value="Não Iniciada" selected>🔴 Não Iniciada</option>
+                            <option value="Iniciada">🟡 Iniciada</option>
+                            <option value="Concluída">🟢 Concluída</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data">Data da Tarefa</label>
+                        <input type="date" name="Data de Cadastro" id="data">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prioridade">Prioridade</label>
+                        <select name="Prioridade" id="prioridade">
+                            <option value="Baixa">🟢 Baixa</option>
+                            <option value="Média" selected>🟡 Média</option>
+                            <option value="Alta">🔴 Alta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="observacoes">Observações Adicionais</label>
+                    <textarea 
+                        name="Observações" 
+                        id="observacoes" 
+                        placeholder="Adicione observações, lembretes ou detalhes importantes..."
+                        rows="4"
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="spinner"></span>
+                    <span class="btn-text">✅ Cadastrar Tarefa</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="tips-container">
+            <h3>💡 Dicas para um bom cadastro</h3>
+            <ul class="tips-list">
+                <li>
+                    <span>📝</span>
+                    <span>Seja específico na descrição da tarefa para facilitar a execução</span>
+                </li>
+                <li>
+                    <span>📅</span>
+                    <span>Defina uma data realista para conclusão da tarefa</span>
+                </li>
+                <li>
+                    <span>🎯</span>
+                    <span>Escolha a categoria correta para melhor organização</span>
+                </li>
+                <li>
+                    <span>⚡</span>
+                    <span>Use a prioridade para organizar suas tarefas por importância</span>
+                </li>
+                <li>
+                    <span>📋</span>
+                    <span>Adicione observações importantes que podem ajudar na execução</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <script src="scripts/main.js"></script>
+    <script src="scripts/form.js"></script>
+</body>
+</html>

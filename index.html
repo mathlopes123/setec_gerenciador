@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="styles/globals.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="index.html">📋 Tarefas</a></li>
+                <li><a href="cadastro.html">➕ Cadastro</a></li>
+            </ul>
+        </nav>
+
+        <div class="header">
+            <h1>📋 Gerenciador de Tarefas</h1>
+            <p>Sistema profissional de gestão de tarefas</p>
+        </div>
+
+        <div class="filters">
+            <h3>🔍 Filtros</h3>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="filterText">Busca por Descrição:</label>
+                    <input type="text" id="filterText" placeholder="Digite a descrição da tarefa...">
+                </div>
+                <div class="filter-group">
+                    <label for="filterStatus">Situação:</label>
+                    <select id="filterStatus">
+                        <option value="Todos">Todas as situações</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterPriority">Prioridade:</label>
+                    <select id="filterPriority">
+                        <option value="Todas">Todas as prioridades</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Média">Média</option>
+                        <option value="Baixa">Baixa</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterCategory">Categoria:</label>
+                    <select id="filterCategory">
+                        <option value="Todas">Todas as categorias</option>
+                        <option value="Alimentação">🍽️ Alimentação</option>
+                        <option value="Vestuário">👕 Vestuário</option>
+                        <option value="Limpeza">🧹 Limpeza</option>
+                        <option value="Trabalho">💼 Trabalho</option>
+                        <option value="Estudos">📚 Estudos</option>
+                        <option value="Saúde">🏥 Saúde</option>
+                        <option value="Lazer">🎮 Lazer</option>
+                        <option value="Outros">📦 Outros</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-buttons">
+                <button class="btn btn-primary" onclick="filterTable()">🔍 Aplicar Filtros</button>
+                <button class="btn btn-secondary" onclick="clearFilters()">🗑️ Limpar Filtros</button>
+                <button class="btn btn-primary" onclick="fetchData()">🔄 Atualizar Dados</button>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <h3>📊 Estatísticas das Tarefas</h3>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h4>Distribuição por Status</h4>
+                    <canvas id="statusChart" class="chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Tarefas por Categoria</h4>
+                    <canvas id="categoryChart" class="chart"></canvas>
+                </div>
+            </div>
+            <div class="stats-grid" id="statsGrid"></div>
+        </div>
+
+        <div class="table-container">
+            <h3>📝 Lista de Tarefas</h3>
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p id="loading-message">Carregando tarefas...</p>
+            </div>
+            <table id="tabela" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Prioridade</th>
+                        <th>Observações</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tasks-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>
