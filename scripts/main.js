@@ -90,8 +90,8 @@ function renderTable(tasksToRender) {
                 <td>${task[PRIORIDADE_KEY] || ""}</td>
                 <td>${task[OBSERVACOES_KEY] || ""}</td>
                 
-                <td>
-                    <select class="filter-group" id="status-${rowId}" 
+                <td class="filter-group">
+                    <select id="status-${rowId}" 
                             data-original-status="${currentStatus}" 
                             onchange="handleStatusChange(${rowId}, this.value)">
                         ${statusOptionsHtml}
