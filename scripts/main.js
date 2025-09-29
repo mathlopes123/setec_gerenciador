@@ -91,7 +91,7 @@ function renderTable(tasksToRender) {
                 <td>${task[OBSERVACOES_KEY] || ""}</td>
                 
                 <td>
-                    <select id="status-${rowId}" 
+                    <select class="filter-group" id="status-${rowId}" 
                             data-original-status="${currentStatus}" 
                             onchange="handleStatusChange(${rowId}, this.value)">
                         ${statusOptionsHtml}
