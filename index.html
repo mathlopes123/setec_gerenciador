@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Tarefas</title>
     <link rel="stylesheet" href="styles/globals.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -62,6 +63,7 @@
                 <button class="btn btn-primary" onclick="filterTable()">🔍 Aplicar Filtros</button>
                 <button class="btn btn-secondary" onclick="clearFilters()">🗑️ Limpar Filtros</button>
                 <button class="btn btn-primary" onclick="fetchData()">🔄 Atualizar Dados</button>
+                <button class="btn btn-secondary" id="gerar-pdf">🖶 Gerar PDF</button>
             </div>
         </div>
 
@@ -105,5 +107,6 @@
     <div id="alertContainer"></div>
 
     <script src="scripts/main.js"></script>
+    <script src="scripts/pdf.js"></script>
 </body>
 </html>
