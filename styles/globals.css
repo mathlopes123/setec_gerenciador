@@ -254,6 +254,33 @@ nav a:hover {
   box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
 }
 
+.lista_suspensa_auto {
+  display: flex;
+  flex-direction: column;
+}
+
+.lista_suspensa_auto label {
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.lista_suspensa_auto select {
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  background: white;
+}
+
+.lista_suspensa_auto select:focus {
+  outline: none;
+  border-color: #4a5568;
+  box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
+}
+
 .filter-buttons {
   display: flex;
   gap: 10px;
