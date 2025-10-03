@@ -91,11 +91,13 @@ function renderTable(tasksToRender) {
                 <td>${task[OBSERVACOES_KEY] || ""}</td>
                 
                 <td>
+                <div class="lista_suspensa_auto">
                     <select id="status-${rowId}" 
                             data-original-status="${currentStatus}" 
                             onchange="handleStatusChange(${rowId}, this.value)">
                         ${statusOptionsHtml}
                     </select>
+                </div>
                 </td>
                 
                 <td>${actionButton}</td>
