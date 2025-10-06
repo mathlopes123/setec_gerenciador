@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const options = {
             margin: 10,
             filename: 'relatorio-tabela.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
+            image: { type: 'jpeg', quality: 0.80 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
@@ -23,4 +23,5 @@ document.addEventListener('DOMContentLoaded', () => {
             tabelaElemento.style.display = originalDisplay;
         });
     });
+
 });
