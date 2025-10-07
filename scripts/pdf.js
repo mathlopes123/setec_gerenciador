@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Configura as opções do PDF
         const options = {
             margin: 10,
+            margin-top: 5,
             filename: 'relatorio-tabela.pdf',
             image: { type: 'jpeg', quality: 0.80 },
             html2canvas: { scale: 2 },
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
 
 
 
