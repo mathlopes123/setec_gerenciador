@@ -5,12 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     botaoGerarPdf.addEventListener('click', () => {
         // Configura as opções do PDF
         const options = {
-            margin: 10,
+            margin: [0, 0, 0, 0],
             filename: 'relatorio-tabela.pdf',
             image: { type: 'jpeg', quality: 0.80 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            pageBreak: { mode: 'avoid-all'}
         };
 
         // Remove o "display: none" para que a biblioteca possa renderizar
@@ -26,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
 
 
 
