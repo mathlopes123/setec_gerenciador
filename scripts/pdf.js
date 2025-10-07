@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     botaoGerarPdf.addEventListener('click', () => {
         // Configura as opções do PDF
         const options = {
-            margin: [10, 0, 10, 0],
+            margin: 10,
             filename: 'relatorio-tabela.pdf',
             image: { type: 'jpeg', quality: 0.80 },
             html2canvas: { scale: 2 },
@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
 
 
 
