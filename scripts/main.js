@@ -87,7 +87,7 @@ function renderTable(tasksToRender) {
 // NOVO: Botão de Excluir
     const deleteButton = `
         <button class="btn btn-secondary btn-sm" 
-                style="padding: 8px 15px; margin-left: ${isModified ? '5px' : '0'}; margin-top: 10px;" 
+                style="padding: 8px 15px; margin-left: ${isModified ? '0px' : '0'}; margin-top: 10px;" 
                 onclick="confirmDeleteTask(${rowId})">
             🗑️ Excluir
         </button>
