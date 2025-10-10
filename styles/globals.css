@@ -765,15 +765,3 @@ tr:hover {
     font-size: 16px;
   }
 }
-
-
-
-
-
-
-/* CSS para o elemento que você passa para o html2pdf */
-#tabela {
-    /* Largura máxima para caber em uma página A4 Retrato com margens de 10mm */
-    max-width: 190mm !important; 
-    overflow: hidden !important; /* Esconde qualquer conteúdo que ainda possa vazar */
-}
