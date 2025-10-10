@@ -1,6 +1,6 @@
 // API Configuration
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzXOjj-YgixwSgj1JdmME7MngZtZ8sN5CeRVvVN9WJIA_G0786KKma3t-QA7_dhCeb9/exec"
+  "https://script.google.com/macros/s/AKfycbwLo5yziLGTebdj4YhDT6FDJmE7pNh6pxMZ-sItOAnsUdFipMFnfF2FZ1FVCQBmcq5b/exec"
 
 let allTasks = []
 const modifiedTasks = {}
@@ -44,7 +44,7 @@ async function fetchData() {
     console.error("Erro ao buscar dados da API:", error)
     document.getElementById("tasks-tbody").innerHTML =
       `<tr><td colspan="6" class="text-center text-danger">Falha ao carregar dados. Verifique o console.</td></tr>`
-    showAlert("Falha ao carregar dados. Verifique a URL da API.", "error"); // Adicionado alerta
+    showAlert("Falha ao carregar dados. Verifique a URL da API.", "error"); 
   } finally {
     document.getElementById("loading").style.display = "none"
     document.getElementById("tabela").style.display = "table"
@@ -79,9 +79,19 @@ function renderTable(tasksToRender) {
         `,
     ).join("")
 
-    const actionButton = isModified
+    // Botões de Ação
+    const saveButton = isModified
       ? `<button class="btn btn-primary btn-sm" style="padding: 8px 15px;" onclick="submitStatusUpdate(${rowId})">💾 Salvar</button>`
-      : "—"
+      : ''
+    
+    // NOVO: Botão de Excluir
+    const deleteButton = `
+        <button class="btn btn-danger btn-sm" 
+                style="padding: 8px 15px; margin-left: ${isModified ? '5px' : '0'};" 
+                onclick="confirmDeleteTask(${rowId})">
+            🗑️ Excluir
+        </button>
+    `;
 
     html += `
             <tr data-row-index="${rowId}" class="${isModified ? "table-warning" : ""}">
@@ -100,7 +110,10 @@ function renderTable(tasksToRender) {
                 </div>
                 </td>
                 
-                <td>${actionButton}</td>
+                <td>
+                  ${saveButton}
+                  ${deleteButton}
+                </td>
             </tr>
         `
   })
@@ -146,7 +159,7 @@ function clearFilters(shouldRender = true) {
 
   if (shouldRender) {
     renderTable(allTasks)
-    updateStatistics(allTasks); // Adicionado para atualizar estatísticas ao limpar filtros
+    updateStatistics(allTasks); 
   }
 }
 
@@ -222,6 +235,67 @@ async function submitStatusUpdate(rowId) {
   }
 }
 
+// --- NOVAS FUNÇÕES DE EXCLUSÃO ---
+
+/**
+ * Pede confirmação antes de chamar a função de exclusão.
+ */
+function confirmDeleteTask(rowId) {
+    // Usa alert nativo para confirmação
+    if (confirm("Tem certeza que deseja EXCLUIR permanentemente esta tarefa? Esta ação não pode ser desfeita.")) {
+        deleteTask(rowId);
+    }
+}
+
+
+/**
+ * Envia o comando de exclusão para o Apps Script.
+ */
+async function deleteTask(rowId) {
+    const rowIndex = Number(rowId);
+    
+    const payload = {
+        action: 'deleteTask',
+        rowIndex: rowIndex
+    };
+
+    try {
+        document.getElementById('loading-message').textContent = 'Excluindo...';
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('tabela').style.display = 'none';
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8', 
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao excluir: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+            showAlert(`Sucesso: ${result.message}`, 'success');
+            delete modifiedTasks[rowId]; 
+            await fetchData(); // Recarrega todos os dados
+        } else {
+            showAlert(`Erro ao excluir no Sheets: ${result.message}`, 'error');
+        }
+
+    } catch (error) {
+        console.error("Erro no POST (Exclusão):", error);
+        showAlert("Erro fatal ao tentar excluir os dados. Verifique o console.", 'error');
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+    }
+}
+
+
 // Statistics and charts
 function updateStatistics(tasks) {
   const statusCounts = {}
@@ -274,7 +348,6 @@ function renderStatsGrid(totalTasks, statusCounts) {
 }
 
 function renderStatusChart(statusCounts) {
-  // CORRIGIDO: Certifica que a variável global Chart está disponível
   if (typeof Chart === 'undefined') {
     console.error("Chart.js não está carregado. Verifique a tag <script> no seu HTML.");
     return;
@@ -318,9 +391,7 @@ function renderStatusChart(statusCounts) {
 }
 
 function renderCategoryChart(categoryCounts) {
-  // CORRIGIDO: Certifica que a variável global Chart está disponível
   if (typeof Chart === 'undefined') {
-    // Já alertado em renderStatusChart, apenas loga aqui
     return; 
   }
   
@@ -371,11 +442,10 @@ function renderCategoryChart(categoryCounts) {
 
 // Alert system
 function showAlert(message, type = "info") {
-  // Se você não tem um elemento com ID 'alertContainer', esta função falhará silenciosamente
   const alertContainer = document.getElementById("alertContainer")
   if (!alertContainer) {
     console.warn("Elemento #alertContainer não encontrado. Alerta não exibido.");
-    alert(message); // Usa alerta padrão se o container não existir
+    alert(message);
     return;
   }
   
@@ -406,7 +476,9 @@ window.clearFilters = clearFilters
 window.handleStatusChange = handleStatusChange
 window.submitStatusUpdate = submitStatusUpdate
 window.showAlert = showAlert
-window.updateStatistics = updateStatistics // Adicionado updateStatistics
+window.updateStatistics = updateStatistics
+window.confirmDeleteTask = confirmDeleteTask // Adicionado a função de exclusão
+window.deleteTask = deleteTask // Adicionado a função de exclusão
 
 // Initialization
 document.addEventListener("DOMContentLoaded", () => {
