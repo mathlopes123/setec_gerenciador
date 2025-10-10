@@ -84,10 +84,10 @@ function renderTable(tasksToRender) {
       ? `<button class="btn btn-primary btn-sm" style="padding: 8px 15px;" onclick="submitStatusUpdate(${rowId})">💾 Salvar</button>`
       : ''
     
-    // NOVO: Botão de Excluir
+// NOVO: Botão de Excluir
     const deleteButton = `
-        <button class="btn btn-danger btn-sm" 
-                style="padding: 8px 15px; margin-left: ${isModified ? '5px' : '0'};" 
+        <button class="btn btn-secondary btn-sm" 
+                style="padding: 8px 15px; margin-left: ${isModified ? '5px' : '0'}; margin-top: 10px;" 
                 onclick="confirmDeleteTask(${rowId})">
             🗑️ Excluir
         </button>
