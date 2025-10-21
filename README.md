@@ -1,1 +1,1 @@
-Projeto web de gerernciamento de tarefas
+Projeto web de gerenciamento de tarefas
